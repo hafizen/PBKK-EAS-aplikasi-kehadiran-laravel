@@ -1,0 +1,43 @@
+version: '3'
+services:
+
+    pbkk-tugas-1:
+        container_name: pbkk-tugas-5
+        image: dptsi/laravel-web-dev:8.0
+        volumes:
+            - ./src:/var/www/html
+        environment:
+            - VIRTUAL_HOST=${VIRTUAL_HOST}
+            - VIRTUAL_PORT=${VIRTUAL_PORT}
+            - SELF_SIGNED_HOST=${SELF_SIGNED_HOST}
+            - DB_HOST=postgres-db-tugas-5
+            - DB_DATABASE=presensi-ddd
+            - DB_USERNAME=postgres
+            - DB_PASSWORD=admin
+            - DB_CONNECTION=pgsql
+            - DB_PORT=5432
+        depends_on:
+            - db
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        networks:
+            - nginx-proxy-network
+        build:
+            dockerfile: Dockerfile
+    db:
+        container_name: postgres-db-tugas-5
+        image: postgres
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=admin
+            - POSTGRES_DB=presensi-ddd
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./:/backup
+        networks:
+            - nginx-proxy-network
+
+networks:
+    nginx-proxy-network:
+        external: true
